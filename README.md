@@ -1,5 +1,7 @@
 # zwo_achtundvierzig
 
+[![CircleCI](https://circleci.com/gh/jeyemwey/zwo_achtundvierzig.svg?style=svg)](https://circleci.com/gh/jeyemwey/zwo_achtundvierzig)
+
 A implementation of the [2048 game](https://play2048.co/) in flutter. 
 
 ## Getting Started
