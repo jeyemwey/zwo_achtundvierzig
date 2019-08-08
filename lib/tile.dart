@@ -11,9 +11,15 @@ class Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     String t = pow(2, value).toString();
 
+    var size = MediaQuery.of(context).size.width * 0.25; // Default: Portrait
+
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      size = MediaQuery.of(context).size.height * 0.2;
+    }
+
     return Container(
-      height: MediaQuery.of(context).size.width * 0.25,
-      width: MediaQuery.of(context).size.width * 0.25,
+      height: size,
+      width: size,
       color: colorFromNumber(value),
       child: Center(
         child: Text(

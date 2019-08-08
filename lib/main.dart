@@ -11,13 +11,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // Force Portrait Mode
-    // TODO: Modify the game board to support Landscape mode
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
     return MaterialApp(
       title: appTitle,
       theme: ThemeData(

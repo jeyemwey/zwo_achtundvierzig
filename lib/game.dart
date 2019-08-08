@@ -25,28 +25,39 @@ class GameState extends State<Game> {
   @override
   void initState() {
     super.initState();
-    // resetGame();
+    resetGame();
   }
 
   @override
   Widget build(BuildContext context) {
-    //  MediaQuery.of(context).orientation == Orientation.portrait
-    return Column(
-      children: <Widget>[
-        generateGameBoard(gameboard),
-        Center(
-          child: Column(
-            children: <Widget>[
-              Text(
-                "Score: " + score.toString(),
-                style: Theme.of(context).primaryTextTheme.display1,
-              ),
-              resetButtons(),
-            ],
-          ),
-        )
-      ],
-    );
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
+    var children = <Widget>[
+      generateGameBoard(gameboard),
+      Center(
+        child: Column(
+          children: <Widget>[
+            Text(
+              "Score: " + score.toString(),
+              style: Theme.of(context).primaryTextTheme.display1,
+            ),
+            resetButtons(),
+          ],
+        ),
+      )
+    ];
+
+    if (isPortrait) {
+      return Column(
+        children: children,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      );
+    } else {
+      return Row(
+        children: children,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      );
+    }
   }
 
   Widget generateGameBoard(List<List<int>> g) {
