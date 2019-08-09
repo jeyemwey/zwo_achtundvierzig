@@ -263,21 +263,27 @@ class GameState extends State<Game> {
     j = 0;
     for (var i = 0; i < 4; i++) {
       if (gameboard[i][j] == gameboard[i][j + 1]) {
-        score = score + 2 * gameboard[i][j];
-        gameboard[i][j] = gameboard[i][j] + gameboard[i][j + 1];
+        if (gameboard[i][j + 1] != 0) {
+          score += 2 * pow(2, gameboard[i][j]);
+          gameboard[i][j] = gameboard[i][j] + 1;
+        }
         gameboard[i][j + 1] = gameboard[i][j + 2];
         gameboard[i][j + 2] = gameboard[i][j + 3];
         gameboard[i][j + 3] = 0;
       }
       if (gameboard[i][j + 1] == gameboard[i][j + 2]) {
-        score = score + 2 * gameboard[i][j + 1];
-        gameboard[i][j + 1] = gameboard[i][j + 1] + gameboard[i][j + 2];
+        if (gameboard[i][j + 2] != 0) {
+          score += 2 * pow(2, gameboard[i][j + 1]);
+          gameboard[i][j + 1] = gameboard[i][j + 1] + 1;
+        }
         gameboard[i][j + 2] = gameboard[i][j + 3];
         gameboard[i][j + 3] = 0;
       }
       if (gameboard[i][j + 2] == gameboard[i][j + 3]) {
-        score = score + 2 * gameboard[i][j + 2];
-        gameboard[i][j + 2] = gameboard[i][j + 2] + gameboard[i][j + 3];
+        if (gameboard[i][j + 3] != 0) {
+          score += 2 * pow(2, gameboard[i][j + 2]);
+          gameboard[i][j + 2] = gameboard[i][j + 2] + 1;
+        }
         gameboard[i][j + 3] = 0;
       }
     }
