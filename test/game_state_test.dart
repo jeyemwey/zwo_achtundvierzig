@@ -24,26 +24,90 @@ main() {
     expect(GameState.SWIPE_WEST != GameState.SWIPE_SOUTH, true);
   });
 
-  test("Simple Game Move operation", () {
-    GameState gs = GameState();
-    gs.gameboard = [
-      [1, 0, 0, 0],
-      [1, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
+  test("performs move operations without adding new tiles", () {
+    // Every MoveOperationTestcase is its own GameState which is reset after
+    // each move. The Score in the Testcase is just the one that results from
+    // moving from the start gameboard to the expected end.
+
+    List<MoveOperationTestcase> cases = [
+      MoveOperationTestcase(
+        start: [
+          [1, 0, 0, 0],
+          [1, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ],
+        direction: GameState.SWIPE_SOUTH,
+        expected: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [2, 0, 0, 0],
+        ],
+        newScore: 4,
+      ),
+      MoveOperationTestcase(
+        start: [
+          [0, 0, 0, 2],
+          [0, 0, 0, 0],
+          [0, 0, 0, 2],
+          [0, 0, 0, 0],
+        ],
+        direction: GameState.SWIPE_SOUTH,
+        expected: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 3],
+        ],
+        newScore: 8,
+      ),
+      MoveOperationTestcase(
+        start: [
+          [0, 0, 0, 2],
+          [0, 0, 0, 0],
+          [0, 0, 0, 5],
+          [0, 0, 0, 0],
+        ],
+        direction: GameState.SWIPE_SOUTH,
+        expected: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 2],
+          [0, 0, 0, 5],
+        ],
+        newScore: 0,
+      ),
+      MoveOperationTestcase(
+        start: [
+          [2, 2, 2, 2],
+          [0, 0, 0, 0],
+          [2, 2, 2, 2],
+          [0, 0, 0, 0],
+        ],
+        direction: GameState.SWIPE_EAST,
+        expected: [
+          [0, 0, 3, 3],
+          [0, 0, 0, 0],
+          [0, 0, 3, 3],
+          [0, 0, 0, 0],
+        ],
+        newScore: 32,
+      )
     ];
 
-    gs.move(GameState.SWIPE_SOUTH);
+    int i = 1;
+    for (var c in cases) {
+      GameState gs = GameState();
 
-    expect(
-      gs.gameboard,
-      [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [2, 0, 0, 0],
-      ],
-    );
+      gs.gameboard = c.start;
+      gs.move(c.direction);
+
+      expect(gs.gameboard, c.expected);
+      expect(gs.score, c.newScore);
+
+      printOnFailure("Ran Test successfully: #" + (i++).toString());
+    }
   });
 
   test("throws an Exception when a move in a unspecified direction is called",
@@ -96,5 +160,19 @@ main() {
         [1, 0, 0, 0],
       ],
     );
+  });
+}
+
+class MoveOperationTestcase {
+  List<List<int>> start;
+  int direction;
+  List<List<int>> expected;
+  int newScore;
+
+  MoveOperationTestcase({
+    this.start,
+    this.direction,
+    this.expected,
+    this.newScore,
   });
 }
