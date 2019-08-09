@@ -1,5 +1,6 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:zwo_achtundvierzig/mechanics.dart';
 
 import 'package:zwo_achtundvierzig/tile.dart';
 
@@ -16,11 +17,21 @@ class GameState extends State<Game> {
   bool resetConfirm = false;
 
   void resetGame() {
-    int r = 0;
-    gameboard =
-        List<List<int>>.generate(4, (i) => List<int>.generate(4, (j) => r++));
     score = 0;
     resetConfirm = false;
+
+    // Get a random number between 0 and 15 (inclusively, nextInt is
+    // exclusively). Then, create a new 2D array of ints and fill every piece
+    // with zero except for the random position.
+    int i = 0;
+    int randomPosition = Random().nextInt(16);
+    gameboard = List<List<int>>.generate(
+      4,
+      (j) => List<int>.generate(
+        4,
+        (k) => i++ == randomPosition ? 1 : 0,
+      ),
+    );
   }
 
   @override
@@ -100,18 +111,18 @@ class GameState extends State<Game> {
           // More Delta in X than Y direction <<<--->>>
           if (delta.dx > 0) {
             // 0|0 is in the top-left corner, dx>0 => going right
-            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_EAST);
+            move(GameState.SWIPE_EAST);
           } else {
             // Going left
-            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_WEST);
+            move(GameState.SWIPE_WEST);
           }
         } else {
           // More in Y direction
           if (delta.dy > 0) {
             // dy>0 => going down
-            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_SOUTH);
+            move(GameState.SWIPE_SOUTH);
           } else {
-            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_NORTH);
+            move(GameState.SWIPE_NORTH);
           }
         }
       },
@@ -148,5 +159,38 @@ class GameState extends State<Game> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: btns,
     );
+  }
+
+  // Swipe directions
+  static const SWIPE_NORTH = 0;
+  static const SWIPE_EAST = 1;
+  static const SWIPE_SOUTH = 2;
+  static const SWIPE_WEST = 3;
+
+  // This is the move function!
+  void move(int direction) {
+    switch (direction) {
+      case SWIPE_NORTH:
+        print("Swipe north!");
+        break;
+      case SWIPE_EAST:
+        print("Swipe east!");
+        break;
+      case SWIPE_SOUTH:
+        print("Swipe south!");
+        break;
+      case SWIPE_WEST:
+        print("Swipe west!");
+        break;
+      default:
+        throw new ArgumentError.value(direction, "move");
+    }
+
+    gameboard = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [2, 0, 0, 0],
+    ];
   }
 }
