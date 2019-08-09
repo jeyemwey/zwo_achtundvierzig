@@ -107,24 +107,26 @@ class GameState extends State<Game> {
           return;
         }
 
-        if (delta.dx.abs() > delta.dy.abs()) {
-          // More Delta in X than Y direction <<<--->>>
-          if (delta.dx > 0) {
-            // 0|0 is in the top-left corner, dx>0 => going right
-            move(GameState.SWIPE_EAST);
+        setState(() {
+          if (delta.dx.abs() > delta.dy.abs()) {
+            // More Delta in X than Y direction <<<--->>>
+            if (delta.dx > 0) {
+              // 0|0 is in the top-left corner, dx>0 => going right
+              move(GameState.SWIPE_EAST);
+            } else {
+              // Going left
+              move(GameState.SWIPE_WEST);
+            }
           } else {
-            // Going left
-            move(GameState.SWIPE_WEST);
+            // More in Y direction
+            if (delta.dy > 0) {
+              // dy>0 => going down
+              move(GameState.SWIPE_SOUTH);
+            } else {
+              move(GameState.SWIPE_NORTH);
+            }
           }
-        } else {
-          // More in Y direction
-          if (delta.dy > 0) {
-            // dy>0 => going down
-            move(GameState.SWIPE_SOUTH);
-          } else {
-            move(GameState.SWIPE_NORTH);
-          }
-        }
+        });
       },
     );
   }
@@ -172,25 +174,112 @@ class GameState extends State<Game> {
     switch (direction) {
       case SWIPE_NORTH:
         print("Swipe north!");
+
+        rotate();
+        mergeToFirstColumn();
+        rotate();
+        rotate();
+        rotate();
         break;
+
       case SWIPE_EAST:
         print("Swipe east!");
+
+        rotate();
+        rotate();
+        mergeToFirstColumn();
+        rotate();
+        rotate();
         break;
+
       case SWIPE_SOUTH:
         print("Swipe south!");
+
+        rotate();
+        rotate();
+        rotate();
+        mergeToFirstColumn();
+        rotate();
         break;
+
       case SWIPE_WEST:
         print("Swipe west!");
+
+        mergeToFirstColumn();
         break;
+
       default:
         throw new ArgumentError.value(direction, "move");
     }
+    // });
+  }
 
+  void rotate() {
     gameboard = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [2, 0, 0, 0],
+      [gameboard[0][3], gameboard[1][3], gameboard[2][3], gameboard[3][3]],
+      [gameboard[0][2], gameboard[1][2], gameboard[2][2], gameboard[3][2]],
+      [gameboard[0][1], gameboard[1][1], gameboard[2][1], gameboard[3][1]],
+      [gameboard[0][0], gameboard[1][0], gameboard[2][0], gameboard[3][0]],
     ];
+  }
+
+  // This massive dumpster fire comes from my first implementation which was in
+  // Python. Except that I do not do everything four times now and I'm trying
+  // to wrap unit tests around it. Thus, IF something was to break I can still
+  // see what is expected behaviour and what isn't.
+  // You can find the old, smokey trash bin at
+  // https://github.com/jeyemwey/ml-2048/blob/master/engine.py#L106
+  void mergeToFirstColumn() {
+    var j = 0;
+    for (var i = 0; i < 4; i++) {
+      if (gameboard[i][j] != 0 ||
+          gameboard[i][j + 1] != 0 ||
+          gameboard[i][j + 2] != 0 ||
+          gameboard[i][j + 3] != 0) {
+        if (gameboard[i][j] == 0) {
+          while (gameboard[i][j] == 0) {
+            gameboard[i][j] = gameboard[i][j + 1];
+            gameboard[i][j + 1] = gameboard[i][j + 2];
+            gameboard[i][j + 2] = gameboard[i][j + 3];
+            gameboard[i][j + 3] = 0;
+          }
+        }
+        if (gameboard[i][j + 1] == 0 &&
+            (gameboard[i][j + 2] != 0 || gameboard[i][j + 3] != 0)) {
+          while (gameboard[i][j + 1] == 0) {
+            gameboard[i][j + 1] = gameboard[i][j + 2];
+            gameboard[i][j + 2] = gameboard[i][j + 3];
+            gameboard[i][j + 3] = 0;
+          }
+        }
+        if (gameboard[i][j + 2] == 0 && gameboard[i][j + 3] != 0) {
+          while (gameboard[i][j + 2] == 0) {
+            gameboard[i][j + 2] = gameboard[i][j + 3];
+            gameboard[i][j + 3] = 0;
+          }
+        }
+      }
+    }
+    j = 0;
+    for (var i = 0; i < 4; i++) {
+      if (gameboard[i][j] == gameboard[i][j + 1]) {
+        score = score + 2 * gameboard[i][j];
+        gameboard[i][j] = gameboard[i][j] + gameboard[i][j + 1];
+        gameboard[i][j + 1] = gameboard[i][j + 2];
+        gameboard[i][j + 2] = gameboard[i][j + 3];
+        gameboard[i][j + 3] = 0;
+      }
+      if (gameboard[i][j + 1] == gameboard[i][j + 2]) {
+        score = score + 2 * gameboard[i][j + 1];
+        gameboard[i][j + 1] = gameboard[i][j + 1] + gameboard[i][j + 2];
+        gameboard[i][j + 2] = gameboard[i][j + 3];
+        gameboard[i][j + 3] = 0;
+      }
+      if (gameboard[i][j + 2] == gameboard[i][j + 3]) {
+        score = score + 2 * gameboard[i][j + 2];
+        gameboard[i][j + 2] = gameboard[i][j + 2] + gameboard[i][j + 3];
+        gameboard[i][j + 3] = 0;
+      }
+    }
   }
 }
