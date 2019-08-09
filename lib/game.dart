@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zwo_achtundvierzig/mechanics.dart';
 
 import 'package:zwo_achtundvierzig/tile.dart';
 
@@ -61,14 +62,59 @@ class GameState extends State<Game> {
   }
 
   Widget generateGameBoard(List<List<int>> g) {
-    return Column(
-      children: g
-          .map(
-            (c) => Row(
-              children: c.map((r) => Tile(r)).toList(),
-            ),
-          )
-          .toList(),
+    return GestureDetector(
+      child: Column(
+        children: g
+            .map(
+              (c) => Row(
+                children: c.map((r) => Tile(r)).toList(),
+              ),
+            )
+            .toList(),
+      ),
+      onPanEnd: (details) {
+        var delta = details.velocity.pixelsPerSecond;
+
+        // Filter out invalid pans because they would result in SWIPE_NORTH.
+        if (delta.dx == 0 && delta.dx == delta.dy) {
+          print("no move detected");
+        }
+
+        // Initially, I wanted to catch swipes that were too small. However,
+        // I don't find it useful right now. If we find reasons why the swipe
+        // might be too small, we can uncomment that conditional again.
+
+        // if (delta.distance < 60) {
+        //   print("distance too small.");
+        //   return;
+        // }
+
+        // Swiping near corners should be prevented - this helps catching
+        // unintentional swipes or the wrong ones.
+        if ((delta.dx - delta.dy).abs() < 50) {
+          print("direction unclear.");
+          return;
+        }
+
+        if (delta.dx.abs() > delta.dy.abs()) {
+          // More Delta in X than Y direction <<<--->>>
+          if (delta.dx > 0) {
+            // 0|0 is in the top-left corner, dx>0 => going right
+            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_EAST);
+          } else {
+            // Going left
+            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_WEST);
+          }
+        } else {
+          // More in Y direction
+          if (delta.dy > 0) {
+            // dy>0 => going down
+            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_SOUTH);
+          } else {
+            gameboard = Mechanics.move(gameboard, Mechanics.SWIPE_NORTH);
+          }
+        }
+      },
     );
   }
 
