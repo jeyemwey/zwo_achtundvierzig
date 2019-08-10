@@ -161,6 +161,31 @@ main() {
       ],
     );
   });
+
+  test("adds a new tile to a board when there is space", () {
+    GameState gs = GameState();
+    gs.gameboard = [
+      [1, 0, 1, 1],
+      [1, 1, 1, 1],
+      [1, 1, 1, 1],
+      [1, 1, 1, 1]
+    ];
+    bool over = gs.addNewTile();
+    expect(gs.gameboard[0][1], anyOf(1, 2));
+    expect(over, false);
+  });
+
+  test("flips the game to over if there is no space to add a new tile", () {
+    GameState gs = GameState();
+    gs.gameboard = [
+      [1, 1, 1, 1],
+      [1, 1, 1, 1],
+      [1, 1, 1, 1],
+      [1, 1, 1, 1]
+    ];
+    bool over = gs.addNewTile();
+    expect(over, true);
+  });
 }
 
 class MoveOperationTestcase {

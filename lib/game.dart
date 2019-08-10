@@ -15,10 +15,12 @@ class GameState extends State<Game> {
   List<List<int>> gameboard;
   int score = 0;
   bool resetConfirm = false;
+  bool over = false;
 
   void resetGame() {
     score = 0;
     resetConfirm = false;
+    over = false;
 
     // Get a random number between 0 and 15 (inclusively, nextInt is
     // exclusively). Then, create a new 2D array of ints and fill every piece
@@ -53,6 +55,7 @@ class GameState extends State<Game> {
               "Score: " + score.toString(),
               style: Theme.of(context).primaryTextTheme.display1,
             ),
+            gameOverText(),
             resetButtons(),
           ],
         ),
@@ -126,9 +129,22 @@ class GameState extends State<Game> {
               move(GameState.SWIPE_NORTH);
             }
           }
+
+          // After we moved the tiles, let's add a new one.
+          over = addNewTile();
         });
       },
     );
+  }
+
+  Widget gameOverText() {
+    if (over) {
+      return Text(
+        "Game Over",
+        style: Theme.of(context).primaryTextTheme.display1,
+      );
+    }
+    return Text("");
   }
 
   Widget resetButtons() {
@@ -287,5 +303,37 @@ class GameState extends State<Game> {
         gameboard[i][j + 3] = 0;
       }
     }
+  }
+
+  // Returns false if a new tile was added, returns true if no new tile was
+  // added and the game is over.
+  //
+  // We add the tile at a random position, 90% should be a 2-tile, 10% a 4-tile.
+  bool addNewTile() {
+    if (gameboard.indexWhere(
+              // Walk through every row.
+              (r) =>
+                  r.indexWhere((tile) => tile == 0) !=
+                  -1, // Look for tile == 0 in every row. If there is no index, return false.
+            ) ==
+            -1 // Check if all rows return "no 0 for me". This means, there is no space left.
+        ) {
+      return true;
+    }
+
+    int i = Random().nextInt(4);
+    int j = Random().nextInt(4);
+    while (gameboard[i][j] != 0) {
+      i = Random().nextInt(4);
+      j = Random().nextInt(4);
+    }
+
+    if (Random().nextDouble() <= 0.9) {
+      gameboard[i][j] = 1;
+    } else {
+      gameboard[i][j] = 2;
+    }
+
+    return false;
   }
 }
