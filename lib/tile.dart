@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Tile extends StatelessWidget {
-  int value; // This is not powed!
+  final int value; // This is not powed!
 
   Tile(this.value);
 
