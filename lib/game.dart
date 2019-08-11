@@ -87,6 +87,9 @@ class GameState extends State<Game> {
             .toList(),
       ),
       onPanEnd: (details) {
+        if (over)
+          return; // Don't accept any swipe inputs once the game is over.
+
         var delta = details.velocity.pixelsPerSecond;
 
         // Filter out invalid pans because they would result in SWIPE_NORTH.
