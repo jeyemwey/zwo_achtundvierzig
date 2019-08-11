@@ -13,14 +13,16 @@ class HistoryItem {
   /// of the json blob which might result in an incomplete blob. Adjust it
   /// accordingly, maybe delete the last incomplete history item and close the
   /// json objects.
-  static void save(List<HistoryItem> history, int score) {
+  static String save(List<HistoryItem> history, int score) {
     Map<String, dynamic> j = {
       'playedRounds': history.length,
       'score': score,
       'history': history.map((f) => f.toJson()).toList(),
     };
 
-    print(jsonEncode(j));
+    String json = jsonEncode(j);
+    print(json);
+    return json;
   }
 
   Map<String, dynamic> toJson() {
