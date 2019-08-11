@@ -58,6 +58,10 @@ class GameState extends State<Game> {
               "Score: " + score.toString(),
               style: Theme.of(context).primaryTextTheme.display1,
             ),
+            Text(
+              "# rounds: " + history.length.toString(),
+              style: Theme.of(context).primaryTextTheme.display1,
+            ),
             gameOverText(),
             resetButtons(),
           ],
@@ -238,7 +242,6 @@ class GameState extends State<Game> {
       default:
         throw new ArgumentError.value(direction, "move");
     }
-    // });
   }
 
   void rotate() {
