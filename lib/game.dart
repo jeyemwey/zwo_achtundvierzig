@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:zwo_achtundvierzig/historyitem.dart';
 
 import 'package:zwo_achtundvierzig/tile.dart';
 
@@ -16,11 +17,13 @@ class GameState extends State<Game> {
   int score = 0;
   bool resetConfirm = false;
   bool over = false;
+  List<HistoryItem> history = [];
 
   void resetGame() {
     score = 0;
     resetConfirm = false;
     over = false;
+    history = [];
 
     // Get a random number between 0 and 15 (inclusively, nextInt is
     // exclusively). Then, create a new 2D array of ints and fill every piece
@@ -132,6 +135,9 @@ class GameState extends State<Game> {
 
           // After we moved the tiles, let's add a new one.
           over = addNewTile();
+          if (over) {
+            gameOverRoutine();
+          }
         });
       },
     );
@@ -187,6 +193,11 @@ class GameState extends State<Game> {
 
   // This is the move function!
   void move(int direction) {
+    history.add(HistoryItem(
+      gameboard: gameboard,
+      swipeDirection: direction,
+    ));
+
     switch (direction) {
       case SWIPE_NORTH:
         print("Swipe north!");
@@ -335,5 +346,9 @@ class GameState extends State<Game> {
     }
 
     return false;
+  }
+
+  void gameOverRoutine() {
+    HistoryItem.save(history, score);
   }
 }
